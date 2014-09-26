@@ -10,8 +10,7 @@ to create and use arbitrary distributions in this framework.
 
 rtHMM can handle large state spaces, especially when they are sparsely
 connected. It also allows for tying observation distributions to multiple
-states and exploiting this fact during inference, which also improves
-performance.
+states and exploits this during inference, which also improves performance.
 
 Note that the library is __NOT__ intended to provide learning functionality.
 This should be done using better suited tools. If you need a HMM library for
