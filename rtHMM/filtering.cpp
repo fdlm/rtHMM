@@ -1,3 +1,5 @@
+#include "filtering.h"
+
 #include <iostream>
 #include <functional>
 #include <numeric>
@@ -5,20 +7,25 @@
 namespace rtHMM {
 
     using namespace std;
+    using namespace internal;
 
-    template<typename HT, bool OT>
-    filtering<HT, OT>::filtering(const HT& hmm_model, double skip_prb, size_t max_past_steps) :
+    filtering::filtering(const hmm& hmm_model, double skip_prb, size_t max_past_steps, bool optimise_tied) :
         model(hmm_model),
         state_count(hmm_model.num_states()),
         skip_prob(skip_prb),
         memory_size(max(max_past_steps + 1, 2ul)),
-        seq_prob(0.0),
-        obs_calc(hmm_model)
+        seq_prob(0.0)
     {
         // initialise first forward variable with the prior
         alpha.emplace_back(state_count, 0.0);
         auto& alpha_cur = alpha.back();
         double added_prob = 0.0;
+
+        if (optimise_tied) {
+            obs_prob_calc = make_unique<tied_cache>(hmm_model);
+        } else{
+            obs_prob_calc = make_unique<no_cache>(hmm_model);
+        }
 
         for (size_t i = 0; i < state_count; ++i) {
             double p = model.prior(i);
@@ -39,8 +46,7 @@ namespace rtHMM {
         new_nonzero_elements.reserve(state_count);
     }
 
-    template<typename HT, bool OT>
-    void filtering<HT, OT>::add_observation(const typename HT::observation_type& obs)
+    void filtering::add_observation(const observation& obs)
     {
         const vector<double>& alpha_prev = alpha.back();
 
@@ -66,9 +72,9 @@ namespace rtHMM {
         }
 
         double norm_val = 0.;
-        obs_calc.add_observation(obs);
+        obs_prob_calc->add_observation(obs);
         for (size_t i : new_nonzero_elements) {
-            alpha_cur[i] *= obs_calc.probability(i);
+            alpha_cur[i] *= obs_prob_calc->probability(i);
             norm_val += alpha_cur[i];
         }
 
@@ -88,47 +94,32 @@ namespace rtHMM {
         }
     }
 
-    template<typename HT, bool OT>
-    template<class container_type>
-    void filtering<HT, OT>::add_observation_sequence(const container_type& seq)
-    {
-        for (const auto& obs : seq) {
-            add_observation(obs);
-        }
-    }
-
-    template<typename HT, bool OT>
-    size_t filtering<HT, OT>::n_past_steps() const
+    size_t filtering::n_past_steps() const
     {
         return alpha.size();
     }
 
-    template<typename HT, bool OT>
-    size_t filtering<HT, OT>::max_past_steps() const
+    size_t filtering::max_past_steps() const
     {
         return memory_size - 1;
     }
 
-    template<typename HT, bool OT>
-    double filtering<HT, OT>::sequence_probability() const
+    double filtering::sequence_probability() const
     {
         return exp(seq_prob);
     }
 
-    template<typename HT, bool OT>
-    double filtering<HT, OT>::sequence_log_probability() const
+    double filtering::sequence_log_probability() const
     {
         return seq_prob;
     }
 
-    template<typename HT, bool OT>
-    const vector<double>& filtering<HT, OT>::distribution(size_t back_steps) const
+    const vector<double>& filtering::distribution(size_t back_steps) const
     {
         assert(n_past_steps() > back_steps);
         auto it = alpha.rbegin();
         advance(it, back_steps);
         return *it;
     }
-
 
 } // namespace rtHMM

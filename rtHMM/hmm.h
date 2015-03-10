@@ -23,16 +23,10 @@ namespace rtHMM {
      *
      *  __IMPORTANT__: Normalisation constraints (such as that probabilities
      *  sum to one) are not checked!
-     *
-     *  \tparam OT  Observation type of the HMM
      */
-    template<typename OT>
     class hmm {
 
         public:
-            typedef OT observation_type;
-            typedef distribution<OT> distribution_type;
-
             //! \brief Represents a transition to of from another state.
             struct link {
                 size_t state_id;    //!< ID of state the transition is to or from
@@ -56,7 +50,13 @@ namespace rtHMM {
              *
              *  \param[in] num_states   Number of states of the HMM
              */
-            hmm(size_t num_states);
+            hmm(size_t num_states)
+            {
+                prior_probs.resize(num_states);
+                successor_links.resize(num_states);
+                predecessor_links.resize(num_states);
+                observation_dists.resize(num_states);
+            }
 
             /*! \brief Constructs a HMM with a specified prior distribution
              *
@@ -101,6 +101,30 @@ namespace rtHMM {
             template<typename PT, typename TT>
             hmm(const PT& prior, const TT& transition);
 
+            /*! \brief Constructs a HMM with discrete observation
+             *         distributions from a prior, transition and observation matrix
+             *         and/or sequence container. The i-th row of the observation matrix
+             *         is a vector defining the observation probabilities for the i-th
+             *         state.
+             *
+             *  This constructor can process a multitude of types for each of the
+             *  parameters. \paramname{prior} and \paramname{transition} can be any
+             *  type that the other constructors of the hmm class can handle. The
+             *  \paramname{observation} parameter can be either a dense_matrix or
+             *  a (sequence) container of (sequence) containers carrying the
+             *  probabilities.
+             *
+             *  \tparam PT type of the parameter holding the prior distribution
+             *  \tparam TT type of the parameter holding the transition matrix
+             *  \tparam OT type of the parameter holding the observation matrix
+             *
+             *  \param[in] prior prior probability distribution of the model
+             *  \param[in] transition transition matrix of the model
+             *  \param[in] observation observation matrix of the model
+             */
+            template<typename PT, typename TT, typename OT>
+            hmm(const PT& prior, const TT& transition, const OT& observation);
+
             // TODO: add third constructors that accept observation distributions
 
             /*! \brief Sets the prior probability of a state
@@ -127,7 +151,7 @@ namespace rtHMM {
              *  \param[in] dist Shared pointer to the observation distribution
              *  \sa observation_distribution
              */
-            void set_observation_distribution(size_t state_id, shared_ptr<distribution_type> dist);
+            void set_observation_distribution(size_t state_id, shared_ptr<distribution> dist);
 
             /*! \brief Sets a observation distribution tied to multiple states.
              *
@@ -136,7 +160,7 @@ namespace rtHMM {
              *  \param[in] dist Shared pointer to the observation distribution
              */
             template<typename T>
-            void set_tied_observation_distribution(const T& state_ids, shared_ptr<distribution_type> dist);
+            void set_tied_observation_distribution(const T& state_ids, shared_ptr<distribution> dist);
 
             /*! \brief Gets the prior probability of a state
              *
@@ -177,7 +201,7 @@ namespace rtHMM {
              *  \sa set_observation_distribution
              *  \sa set_tied_observation_distribution
              */
-            const shared_ptr<distribution_type> observation_distribution(size_t state_id) const {
+            const shared_ptr<distribution> observation_distribution(size_t state_id) const {
                 return observation_dists[state_id];
             }
 
@@ -193,41 +217,12 @@ namespace rtHMM {
             vector<double> prior_probs;
             vector<vector<link>> successor_links;
             vector<vector<link>> predecessor_links;
-            vector<shared_ptr<distribution_type>> observation_dists;
+            vector<shared_ptr<distribution>> observation_dists;
     };
-
-    typedef hmm<size_t> disc_hmm;
-
-    /*! \brief Convenience function that creates a HMM with discrete observation
-     *         distributions from a prior, transition and observation matrix
-     *         and/or sequence container. The i-th row of the observation matrix
-     *         is a vector defining the observation probabilities for the i-th
-     *         state.
-     *
-     *  This function can process a multitude of types for each of the
-     *  parameters. \paramname{prior} and \paramname{transition} can be any
-     *  type that the constructors of the hmm class can handle. The
-     *  \paramname{observation} parameter can be either a dense_matrix or
-     *  a (sequence) container of (sequence) containers carrying the
-     *  probabilities.
-     *
-     *  \tparam PT type of the parameter holding the prior distribution
-     *  \tparam TT type of the parameter holding the transition matrix
-     *  \tparam OT type of the parameter holding the observation matrix
-     *
-     *  \param[in] prior prior probability distribution of the model
-     *  \param[in] transition transition matrix of the model
-     *  \param[in] observation observation matrix of the model
-     *
-     *  \sa hmm::hmm(const PT& prior, const TT& transition)
-     */
-    template<typename PT, typename TT, typename OT>
-    disc_hmm discrete_hmm(const PT& prior, const TT& transition, const OT& observation);
-
-
 
 } // namespace rtHMM
 
+// include template implementations
 #include "hmm_impl.h"
 
 #endif //RTHMM_HMM_H

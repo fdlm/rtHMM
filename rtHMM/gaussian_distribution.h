@@ -12,7 +12,7 @@ namespace rtHMM {
      *  \sa distribution
      */
     template<int dims>
-    class gaussian_distribution : public distribution<Eigen::Matrix<double, dims, 1>> {
+    class gaussian_distribution : public distribution_base<Eigen::Matrix<double, dims, 1>> {
         public:
             /*! \brief Covariance matrix type */
             typedef Eigen::Matrix<double, dims, dims> variance_type;
@@ -43,7 +43,7 @@ namespace rtHMM {
      *  \sa distribution
      */
     template<>
-    class gaussian_distribution<1> : public distribution<double> {
+    class gaussian_distribution<1> : public distribution_base<double> {
         public:
             /*! \brief Variance is just a single value */
             typedef Eigen::Matrix<double, 1, 1> variance_type;

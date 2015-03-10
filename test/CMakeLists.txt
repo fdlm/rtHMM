@@ -10,6 +10,6 @@ SET(rtHMM_test_srcs
 )
 
 ADD_EXECUTABLE(runUnitTests ${rtHMM_test_srcs})
-TARGET_LINK_LIBRARIES(runUnitTests ${GTEST_BOTH_LIBRARIES})
+TARGET_LINK_LIBRARIES(runUnitTests ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} rtHMM)
 
 GTEST_ADD_TESTS(runUnitTests "" ${rtHMM_test_srcs})

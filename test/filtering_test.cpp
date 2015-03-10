@@ -24,16 +24,16 @@ using namespace std;
 
 TEST(filtering_test, test_discrete_emission)
 {
-    dense_vector prior(STATE_COUNT);
-    dense_matrix trans(STATE_COUNT, STATE_COUNT);
-    dense_matrix obs(STATE_COUNT, ALPHABET_SIZE);
+    dense_vector prior{STATE_COUNT};
+    dense_matrix trans{STATE_COUNT, STATE_COUNT};
+    dense_matrix obs{STATE_COUNT, ALPHABET_SIZE};
     prior << PRIOR;
     trans << TRANSITION;
     obs << OBSERVATION;
 
-    disc_hmm model = discrete_hmm(prior, trans, obs);
+    hmm model{prior, trans, obs};
+    filtering fltr{model};
 
-    filtering<disc_hmm> fltr {model};
     size_t obs_seq[] = TEST_SEQUENCE;
 
     double correct_fwd_vars[][STATE_COUNT] = FILTERING_RESULTS;

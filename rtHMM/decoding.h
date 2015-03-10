@@ -8,6 +8,7 @@
 
 #include "hmm.h"
 #include "utils.h"
+#include "observation.h"
 #include "observation_cache.h"
 
 namespace rtHMM {
@@ -19,16 +20,7 @@ namespace rtHMM {
      *         aka fixed-lag decoding using the Viterbi algorithm.
      *
      *  \sa filtering
-     *
-     *  \tparam hmm_type Type of the HMM for which decoding should be performed
-     *  \tparam optimise_tied
-     *      \parblock If true, observation probabilities of tied states are
-     *      computed only once per step. This introduces a small overhead, but
-     *      can speed up the overall computation a lot. If false, the
-     *      probability of tied states is computed repeatedly for each state.
-     *      If you have many tied states, set to true. \endparblock
      */
-    template<typename hmm_type, bool optimise_tied = false>
     class decoding {
         public:
             /*!
@@ -44,13 +36,13 @@ namespace rtHMM {
              *
              *  \sa hmm
              */
-            decoding(const hmm_type& hmm_model, double skip_prob = 0.0, size_t max_lag = 1);
+            decoding(const hmm& hmm_model, double skip_prob = 0.0, size_t max_lag = 1, bool optimise_tied=false);
 
             /*! \brief Adds a new observation, resulting in a new decoding step.
              *
              *  \param[in] obs Observation to add.
              */
-            void add_observation(const typename hmm_type::observation_type& obs);
+            void add_observation(const observation& obs);
 
             /*! \brief Adds a series of observations, resulting in a new decoding steps.
              *
@@ -58,7 +50,11 @@ namespace rtHMM {
              *  \param[in] seq Observation to add.
              */
             template<class container_type>
-            void add_observation_sequence(const container_type& seq);
+            void add_observation_sequence(const container_type& seq) {
+                for (const auto& obs : seq) {
+                    add_observation(obs);
+                }
+            }
 
             /*! \returns Current length of decoded state sequence */
             size_t n_past_steps() const;
@@ -95,12 +91,12 @@ namespace rtHMM {
             double state_sequence_log_probability() const;
 
         private:
-            const hmm_type& model;
+            const hmm& model;
             const double skip_prob;
             const size_t memory_size;
             const size_t state_count;
 
-            typename internal::cache_type<optimise_tied, hmm_type>::type obs_calc;
+            unique_ptr<internal::observation_cache> obs_prob_calc;
             size_t most_probable_end;
 
             array<vector<double>, 2> viterbi;
@@ -115,8 +111,5 @@ namespace rtHMM {
     };
 
 } // namespace rtHMM
-
-// template implementations
-#include "decoding_impl.h"
 
 #endif //RTHMM_DECODING_H

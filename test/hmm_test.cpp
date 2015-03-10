@@ -24,7 +24,7 @@ using namespace rtHMM;
 TEST(hmm_constructor_tests, test_num_states)
 {
     const size_t num_states = 3;
-    hmm<size_t> my_hmm(num_states);
+    hmm my_hmm(num_states);
     ASSERT_EQ(my_hmm.num_states(), num_states);
 }
 
@@ -42,7 +42,7 @@ TEST(hmm_constructor_tests, test_prior_vector)
 {
     const vector<double> prior{PRIOR};
 
-    hmm<size_t> my_hmm(prior);
+    hmm my_hmm(prior);
     ASSERT_EQ(my_hmm.num_states(), prior.size());
     check_prior(prior, my_hmm);
 }
@@ -51,7 +51,7 @@ TEST(hmm_constructor_tests, test_prior_list)
 {
     const list<double> prior{PRIOR};
 
-    hmm<size_t> my_hmm(prior);
+    hmm my_hmm(prior);
     ASSERT_EQ(my_hmm.num_states(), prior.size());
     check_prior(prior, my_hmm);
 }
@@ -67,14 +67,14 @@ class hmm_test : public ::testing::Test {
             dense_matrix obs(STATE_COUNT, ALPHABET_SIZE);
             obs << OBSERVATION;
 
-            simple_hmm = new disc_hmm(discrete_hmm(prior, trans, obs));
+            simple_hmm = new hmm(prior, trans, obs);
         }
 
         virtual void TearDown() {
             delete simple_hmm;
         }
 
-        disc_hmm* simple_hmm;
+        hmm* simple_hmm;
 };
 
 
@@ -101,8 +101,7 @@ TEST_F(hmm_test, successors_test)
             if (correct_p > 0.0) {
                 auto& succ = successors[k];
                 ASSERT_EQ(succ.state_id, j);
-                ASSERT_DOUBLE_EQ(succ.probability, correct_p);
-                ++k;
+                ASSERT_DOUBLE_EQ(succ.probability, correct_p); ++k;
             }
         }
     }

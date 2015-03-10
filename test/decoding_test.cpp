@@ -12,15 +12,15 @@ using namespace std;
 
 TEST(decoding_test, test_discrete_emission_algorithm)
 {
-    dense_vector prior(STATE_COUNT);
-    dense_matrix trans(STATE_COUNT, STATE_COUNT);
-    dense_matrix obs(STATE_COUNT, ALPHABET_SIZE);
+    dense_vector prior{STATE_COUNT};
+    dense_matrix trans{STATE_COUNT, STATE_COUNT};
+    dense_matrix obs{STATE_COUNT, ALPHABET_SIZE};
     prior << PRIOR;
     trans << TRANSITION;
     obs << OBSERVATION;
 
-    disc_hmm model = discrete_hmm(prior, trans, obs);
-    decoding<disc_hmm> dcd {model, 0.0, 2000};
+    hmm model{prior, trans, obs};
+    decoding dcd{model, 0.0, 2000};
 
     size_t obs_seq[] = TEST_SEQUENCE;
     double correct_vtrb[][STATE_COUNT] = VITERBI_RESULTS;

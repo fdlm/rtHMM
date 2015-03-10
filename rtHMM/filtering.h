@@ -18,15 +18,7 @@ namespace rtHMM {
      *
      *  \sa decoding
      *
-     *  \tparam hmm_type Type of the HMM for which the filtering distribution will be computed
-     *  \tparam optimise_tied
-     *      \parblock If true, observation probabilities of tied states are
-     *      computed only once per step. This introduces a small overhead, but can
-     *      speed up the overall computation a lot. If false, the probability of tied states
-     *      is computed repeatedly for each state. If you have many tied states,
-     *      set to true. \endparblock
      */
-    template<typename hmm_type, bool optimise_tied = false>
     class filtering {
         public:
             /*!
@@ -35,20 +27,25 @@ namespace rtHMM {
              *      \parblock Threshold below which probability values will be
              *      considered zero. Higher values will result in faster
              *      computations because of sparser filtering distributions,
-             *      but with lower accuracy.
+             *      but with lower accuracy. \endparblock
              *  \param[in] max_past_steps
              *      \parblock Maximum number of previous distributions
              *      that will be saved. The minimal value is 1. \endparblock
-             *
+             *  \param[in] optimise_tied
+             *      \parblock If true, observation probabilities of tied states are
+             *      computed only once per step. This introduces a small overhead, but can
+             *      speed up the overall computation a lot. If false, the probability of tied states
+             *      is computed repeatedly for each state. If you have many tied states,
+             *      set to true. \endparblock
              *  \sa hmm
              */
-            filtering(const hmm_type& hmm_model, double skip_prob = 0.0, size_t max_past_steps = 1);
+            filtering(const hmm& hmm_model, double skip_prob = 0.0, size_t max_past_steps = 1, bool optimise_tied = false);
 
             /*! \brief Adds a new observation, resulting in a new filtering step.
              *
              *  \param[in] obs Observation to add.
              */
-            void add_observation(const typename hmm_type::observation_type& obs);
+            void add_observation(const observation& obs);
 
             /*! \brief Adds a series of observations, resulting in a new filtering steps.
              *
@@ -56,7 +53,11 @@ namespace rtHMM {
              *  \param[in] seq Observation to add.
              */
             template<class container_type>
-            void add_observation_sequence(const container_type& seq);
+            void add_observation_sequence(const container_type& seq) {
+                for (const auto& obs : seq) {
+                    add_observation(obs);
+                }
+            }
 
             /*! \returns Number of past distributions currently stored */
             size_t n_past_steps() const;
@@ -91,13 +92,13 @@ namespace rtHMM {
             const vector<double>& distribution(size_t back_steps = 0) const;
 
         private:
-            const hmm_type& model;
+            const hmm& model;
             const size_t state_count;
             const double skip_prob;
             const size_t memory_size;
 
             double seq_prob;
-            typename internal::cache_type<optimise_tied, hmm_type>::type obs_calc;
+            unique_ptr<internal::observation_cache> obs_prob_calc;
 
             list<vector<double>> alpha;
 
@@ -107,9 +108,5 @@ namespace rtHMM {
     };
 
 } //namespace rtHMM
-
-
-// Implementation of template methods
-#include "filtering_impl.h"
 
 #endif //RTHMM_FILTERING_H

@@ -28,12 +28,12 @@ namespace rtHMM {
      *  \sa distribution
      */
     template<typename first_dist_type, typename second_dist_type, typename... dist_types>
-    class mixture_distribution : public distribution<typename first_dist_type::value_type> {
+    class mixture_distribution : public distribution_base<typename first_dist_type::value_type> {
 
         static_assert(are_same<typename first_dist_type::value_type,
-                                typename second_dist_type::value_type,
-                                typename dist_types::value_type...>::value == 1,
-                        "Distributions must be defined over same data type");
+                               typename second_dist_type::value_type,
+                               typename dist_types::value_type...>::value == 1,
+                      "Distributions must be defined over same data type");
 
         public:
             /*! \brief number of mixture components */
