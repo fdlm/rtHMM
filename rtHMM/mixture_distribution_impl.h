@@ -35,7 +35,7 @@ namespace rtHMM {
             }
         };
 
-    } // namespace internal
+    } // namespace rtHMM::internal
 
     template<typename FDT, typename SDT, typename... DT>
     double mixture_distribution<FDT, SDT, DT...>::compute_probability(const typename FDT::value_type& value) const

@@ -1,6 +1,10 @@
 #include "decoding.h"
 
 #include <iostream>
+#include <cmath>
+
+#include "hmm.h"
+#include "utils.h"
 
 namespace rtHMM {
 

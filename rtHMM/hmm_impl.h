@@ -53,7 +53,7 @@ namespace rtHMM {
         void init_transition(const sparse_matrix& trans, hmm& model);
         void set_discrete_observations(const dense_matrix& obs, hmm& model);
 
-    } // namespace internal
+    } // namespace rtHMM::internal
 
     template<typename PT>
     hmm::hmm(const PT& prior)
@@ -90,6 +90,5 @@ namespace rtHMM {
             set_observation_distribution(state_id, dist);
         }
     }
-
 
 } // namespace rtHMM

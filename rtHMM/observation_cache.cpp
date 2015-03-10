@@ -4,6 +4,7 @@
 #include "hmm.h"
 
 namespace rtHMM {
+
     namespace internal {
 
         using namespace std;
@@ -75,5 +76,6 @@ namespace rtHMM {
             return dists[state_id]->probability();
         }
 
-    }
-} // namespace rtHMM::internal
+    } // namespace rtHMM::internal
+
+} // namespace rtHMM

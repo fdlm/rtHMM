@@ -4,16 +4,15 @@
 #include <array>
 #include <list>
 #include <vector>
-#include <limits>
 
-#include "hmm.h"
-#include "utils.h"
-#include "observation.h"
 #include "observation_cache.h"
 
 namespace rtHMM {
 
     using namespace std;
+
+    class hmm;
+    class observation;
 
     /*! \brief This class computes the most probable state sequence from a
      *         defined step in the past until the current observation,

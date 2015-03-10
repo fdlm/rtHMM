@@ -82,7 +82,7 @@ namespace rtHMM {
             }
         }
 
-    } // namespace internal
+    } // namespace rtHMM::internal
 
     void hmm::set_transition(size_t from_state_id, size_t to_state_id, double transition_prob)
     {

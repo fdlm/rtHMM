@@ -3,15 +3,14 @@
 
 #include <list>
 #include <vector>
-#include <limits>
 
-#include "hmm.h"
-#include "utils.h"
 #include "observation_cache.h"
 
 namespace rtHMM {
 
     using namespace std;
+
+    class hmm;
 
     /*! \brief This class computes the filtering distribution using the
      *         forward algorithm.

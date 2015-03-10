@@ -1,7 +1,7 @@
 #ifndef RTHMM_RTHMM_H
 #define RTHMM_RTHMM_H
 
-#define RTHMM_VERSION "0.1.0"
+#define RTHMM_VERSION "0.2.0"
 
 #include "hmm.h"
 

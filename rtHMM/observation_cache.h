@@ -7,6 +7,7 @@
 #include "distribution.h"
 
 namespace rtHMM {
+
     class hmm;
 
     namespace internal {
@@ -59,7 +60,8 @@ namespace rtHMM {
                 vector<shared_ptr<cached_distribution>> dists;
         };
 
-    } // namespace internal
+    } // namespace rtHMM::internal
+
 } // namespace rtHMM
 
 #endif // RTHMM_OBSERVATION_CACHE_H

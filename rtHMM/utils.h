@@ -8,6 +8,7 @@
 namespace rtHMM {
 
     namespace internal {
+
         template<typename T, typename ...Args>
         std::unique_ptr<T> make_unique(Args&& ...args)
         {
@@ -24,8 +25,9 @@ namespace rtHMM {
         struct are_same<T, First, Rest...>
                 : std::integral_constant<bool, std::is_same<T, First>::value&& are_same<T, Rest...>::value> {
         };
-    }
-}
 
+    } // namespace rtHMM::internal
+
+} // namespace rtHMM
 
 #endif // RTHMM_UTILS

@@ -55,6 +55,7 @@ namespace rtHMM {
 
             template<typename multidim_dist_type, size_t i> friend struct rtHMM::internal::multidim_prob_comp;
     };
+
 } // namespace rtHMM
 
 

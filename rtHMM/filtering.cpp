@@ -1,8 +1,9 @@
 #include "filtering.h"
 
-#include <iostream>
-#include <functional>
-#include <numeric>
+#include <exception>
+
+#include "hmm.h"
+#include "utils.h"
 
 namespace rtHMM {
 
@@ -81,7 +82,7 @@ namespace rtHMM {
         seq_prob += log(norm_val);
         double scale_factor = 1.0 / norm_val;
         if (isfinite(scale_factor) == 0) {
-            cerr << "ERROR: scale factor not finite: " << scale_factor << ", " << norm_val << '\n';
+            throw runtime_error("scale factor not finite!");
         }
 
         nonzero_elements.clear();
