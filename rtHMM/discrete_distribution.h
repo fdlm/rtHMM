@@ -14,7 +14,7 @@ namespace rtHMM {
      *         are non-negative integers (no 'fancy' mapping, you can use an
      *         enum if you need to)
      */
-    class discrete_distribution : public distribution<size_t> {
+    class discrete_distribution : public distribution_base<size_t> {
         public:
             /*! \brief Constructs the distribution using a probability table.
              *         You have to normalise the probability table yourself so

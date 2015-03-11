@@ -1,14 +1,21 @@
+#include "decoding.h"
+
+#include <iostream>
+#include <cmath>
+
+#include "hmm.h"
+#include "utils.h"
+
 namespace rtHMM {
 
     using namespace std;
+    using namespace internal;
 
-    template<typename HT, bool OT>
-    decoding<HT, OT>::decoding(const HT& hmm_model, double skip_prb, size_t max_lag) :
+    decoding::decoding(const hmm& hmm_model, double skip_prb, size_t max_lag, bool optimise_tied) :
         model(hmm_model),
         skip_prob(skip_prb),
         memory_size(max(max_lag, 1ul)),
         state_count(hmm_model.num_states()),
-        obs_calc(hmm_model),
         viterbi_cur(&viterbi.back()),
         viterbi_prev(&viterbi.front()),
         total_scale_correction(0.0)
@@ -18,6 +25,12 @@ namespace rtHMM {
         auto& vit_c = *viterbi_cur;
         double added_prob = 0.0;
         double max_prob = -1.0;
+
+        if (optimise_tied) {
+            obs_prob_calc = make_unique<tied_cache>(hmm_model);
+        } else {
+            obs_prob_calc = make_unique<no_cache>(hmm_model);
+        }
 
         for (size_t i = 0; i < state_count; ++i) {
             double p = model.prior(i);
@@ -40,9 +53,7 @@ namespace rtHMM {
         }
     }
 
-
-    template<typename HT, bool OT>
-    void decoding<HT, OT>::add_observation(const typename HT::observation_type& obs)
+    void decoding::add_observation(const observation& obs)
     {
         auto tmp = viterbi_prev;
         viterbi_prev = viterbi_cur;
@@ -80,11 +91,11 @@ namespace rtHMM {
         }
 
         nonzero_elements.clear();
-
         double probability_sum = 0.0;
-        obs_calc.add_observation(obs);
+
+        obs_prob_calc->add_observation(obs);
         for (size_t i : new_nonzero_elements) {
-            v_cur[i] *= obs_calc.probability(i);
+            v_cur[i] *= obs_prob_calc->probability(i);
             probability_sum += v_cur[i];
         }
 
@@ -110,29 +121,17 @@ namespace rtHMM {
         new_nonzero_elements.clear();
     }
 
-    template<typename HT, bool OT>
-    template<class container_type>
-    void decoding<HT, OT>::add_observation_sequence(const container_type& seq)
-    {
-        for (const auto& obs : seq) {
-            add_observation(obs);
-        }
-    }
-
-    template<typename HT, bool OT>
-    const vector<double>& decoding<HT, OT>::viterbi_variables() const
+    const vector<double>& decoding::viterbi_variables() const
     {
         return *viterbi_cur;
     }
 
-    template<typename HT, bool OT>
-    vector<size_t> decoding<HT, OT>::state_sequence() const
+    vector<size_t> decoding::state_sequence() const
     {
         return state_sequence(backtracking_pointers.size());
     }
 
-    template<typename HT, bool OT>
-    vector<size_t> decoding<HT, OT>::state_sequence(size_t back_steps) const
+    vector<size_t> decoding::state_sequence(size_t back_steps) const
     {
         assert(back_steps <= backtracking_pointers.size());
 
@@ -151,29 +150,22 @@ namespace rtHMM {
         return sequence;
     }
 
-
-    template<typename HT, bool OT>
-    double decoding<HT, OT>::state_sequence_log_probability() const
+    double decoding::state_sequence_log_probability() const
     {
         return log(viterbi_cur->at(most_probable_end)) + total_scale_correction;
     }
 
-
-    template<typename HT, bool OT>
-    double decoding<HT, OT>::state_sequence_probability() const
+    double decoding::state_sequence_probability() const
     {
         return exp(state_sequence_log_probability());
     }
 
-
-    template<typename HT, bool OT>
-    size_t decoding<HT, OT>::n_past_steps() const
+    size_t decoding::n_past_steps() const
     {
         return backtracking_pointers.size();
     }
 
-    template<typename HT, bool OT>
-    size_t decoding<HT, OT>::max_past_steps() const
+    size_t decoding::max_past_steps() const
     {
         return memory_size;
     }

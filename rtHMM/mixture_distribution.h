@@ -1,9 +1,6 @@
 #ifndef RTHMM_MIXTURE_DISTRIBUTION_H
 #define RTHMM_MIXTURE_DISTRIBUTION_H
 
-#include <list>
-#include <utility>
-#include <memory>
 #include <tuple>
 #include <array>
 
@@ -13,12 +10,12 @@
 
 namespace rtHMM {
 
-    using namespace std;
-    using namespace internal;
-
     namespace internal {
         template<typename mixed_dist_type, size_t i> struct mixed_prob_comp;
     };
+
+    using namespace std;
+    using namespace internal;
 
     /*! \brief A mixture of multiple distributions over the same dimensions.
      *         The mixture components do not have to be of the same type.
@@ -28,12 +25,12 @@ namespace rtHMM {
      *  \sa distribution
      */
     template<typename first_dist_type, typename second_dist_type, typename... dist_types>
-    class mixture_distribution : public distribution<typename first_dist_type::value_type> {
+    class mixture_distribution : public distribution_base<typename first_dist_type::value_type> {
 
         static_assert(are_same<typename first_dist_type::value_type,
-                                typename second_dist_type::value_type,
-                                typename dist_types::value_type...>::value == 1,
-                        "Distributions must be defined over same data type");
+                               typename second_dist_type::value_type,
+                               typename dist_types::value_type...>::value == 1,
+                      "Distributions must be defined over same data type");
 
         public:
             /*! \brief number of mixture components */
@@ -58,7 +55,7 @@ namespace rtHMM {
 
             double compute_probability(const typename first_dist_type::value_type& value) const override;
 
-            template<typename mixed_dist_type, size_t i> friend struct rtHMM::internal::mixed_prob_comp;
+            template<typename mixed_dist_type, size_t i> friend struct mixed_prob_comp;
     };
 
 } // namespace rtHMM

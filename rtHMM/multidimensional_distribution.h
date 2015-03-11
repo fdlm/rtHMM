@@ -25,9 +25,9 @@ namespace rtHMM {
      *  \sa distribution
      * */
     template<typename first_dist_type, typename second_dist_type, typename... dist_types>
-    class multidimensional_distribution : public distribution<tuple<typename first_dist_type::value_type,
-                                                                    typename second_dist_type::value_type,
-                                                                    typename dist_types::value_type...>> {
+    class multidimensional_distribution : public distribution_base<tuple<typename first_dist_type::value_type,
+                                                                         typename second_dist_type::value_type,
+                                                                         typename dist_types::value_type...>> {
         public:
             typedef tuple<typename first_dist_type::value_type,
                           typename second_dist_type::value_type,
@@ -55,6 +55,7 @@ namespace rtHMM {
 
             template<typename multidim_dist_type, size_t i> friend struct rtHMM::internal::multidim_prob_comp;
     };
+
 } // namespace rtHMM
 
 

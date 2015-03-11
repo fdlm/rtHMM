@@ -1,0 +1,7 @@
+3rd_party
+build
+.clang_complete
+.cxx_tags
+.yavide_proj
+cscope.*
+docs/

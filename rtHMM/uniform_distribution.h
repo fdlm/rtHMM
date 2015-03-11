@@ -8,7 +8,7 @@ namespace rtHMM {
     /*! \brief A single-dimensional continuous uniform distribution
      *  \sa distribution
      */
-    class uniform_distribution : public distribution<double> {
+    class uniform_distribution : public distribution_base<double> {
         public:
             /*! \brief Constructs the uniform distribution within a range.
              *         Outside of this range, the density is 0.
