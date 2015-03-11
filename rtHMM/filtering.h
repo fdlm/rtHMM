@@ -16,7 +16,6 @@ namespace rtHMM {
      *         forward algorithm.
      *
      *  \sa decoding
-     *
      */
     class filtering {
         public:
@@ -82,7 +81,6 @@ namespace rtHMM {
              *      distribution should be returned. The possible values depend
              *      on the \paramname{n_past_steps} parameter in the constructor
              *      and on how many observations have already been added.
-             *  \sa filtering
              *  \sa n_past_steps
              *  \sa max_past_steps
              *

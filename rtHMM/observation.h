@@ -5,17 +5,42 @@
 
 namespace rtHMM {
 
+    /*! \brief This is a type-erasure class that holds the reference to
+     *         an HMM observation. The observation can be of any type, but
+     *         must correspond to what the observation distributions of an
+     *         HMM expect.
+     *
+     *  \sa hmm
+     *  \sa filtering
+     *  \sa decoding
+     */
     class observation {
         public:
+            /*! \brief Constructs the observation, erasing the type
+             *  \tparam T type of observation
+             *  \param[in] obs observation
+             */
             template<typename T>
             observation(const T& obs);
 
+            /*! \brief Casts the observation to a specific type, checking
+             *         if the cast is correct (i.e. if the original observation
+             *         was of the requested type
+             *  \tparam T type to cast the observation to
+             */
             template<typename T>
             const T& safe_cast() const;
 
+            /*! \brief Checks if the observation is of a given type
+             *  \tparam T Type to check
+             */
             template<typename T>
             bool has_type() const;
 
+            /*! \brief Casts the observation to a specific type, WITHOUT
+             *         checking if the cast is valid.
+             *  \tparam T type to cast the observation to
+             */
             template<typename T>
             const T& cast() const;
 

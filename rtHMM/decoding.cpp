@@ -91,7 +91,6 @@ namespace rtHMM {
         }
 
         nonzero_elements.clear();
-
         double probability_sum = 0.0;
 
         obs_prob_calc->add_observation(obs);

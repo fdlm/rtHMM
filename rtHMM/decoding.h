@@ -32,7 +32,12 @@ namespace rtHMM {
              *  \param[in] max_lag
              *      \parblock Maximum number of steps that will be traced
              *      back during backtracking. Minimal value is 1.\endparblock
-             *
+             *  \param[in] optimise_tied
+             *      \parblock If true, observation probabilities of tied states are
+             *      computed only once per step. This introduces a small overhead, but can
+             *      speed up the overall computation a lot. If false, the probability of tied states
+             *      is computed repeatedly for each state. If you have many tied states,
+             *      set to true. \endparblock
              *  \sa hmm
              */
             decoding(const hmm& hmm_model, double skip_prob = 0.0, size_t max_lag = 1, bool optimise_tied=false);
@@ -95,6 +100,7 @@ namespace rtHMM {
             const size_t memory_size;
             const size_t state_count;
 
+            //TODO: check if this could be solved using a reference
             unique_ptr<internal::observation_cache> obs_prob_calc;
             size_t most_probable_end;
 

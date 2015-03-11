@@ -9,7 +9,12 @@ namespace rtHMM {
     /*! \brief This is the interface for probability distributions within the rtHMM framework.
      *         If you want to implement your own distribution, you have to derive at least
      *         from this class. Better yet, derive from distribution_base to get automatic
-     *         type conversion.
+     *         type conversion and to be able to use your distribution within a
+     *         mixture_distribution and multidimensional_distribution.
+     *
+     *  \sa distribution_base
+     *  \sa mixture_distribution
+     *  \sa multidimensional_distribution
      */
     class distribution {
         public:
