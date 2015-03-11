@@ -1,7 +1,7 @@
 rtHMM - Real-Time Hidden Markov Models
 ======================================
 
-rtHMM is a header-only C++ library for real-time inference using Hidden Markov
+rtHMM is a C++ library for real-time inference using Hidden Markov
 Models. Although not finished yet, the API should be fairly stable by now.
 The library provides inference algorithms for HMMs with continuous as well
 as discrete, possibly multidimensional, observation distributions. A limited
@@ -10,18 +10,20 @@ to create and use arbitrary distributions in this framework.
 
 rtHMM can handle large state spaces, especially when they are sparsely
 connected. It also allows for tying observation distributions to multiple
-states and exploits this during inference, which also improves performance.
+states and exploits this during inference, which improves runtime performance.
 
-Note that the library is __NOT__ intended to provide learning functionality.
-This should be done using better suited tools. If you need a HMM library for
-__fast__ inference with an API designed with continuous real-time input in
-mind, this one is for you.
+Note that the library is __NOT__ (yet) intended to provide learning 
+functionality. This should be done using better suited tools. But, if you need 
+a HMM library for __fast__ inference with an API designed with continuous 
+real-time input in mind, this one is for you.
 
 ## Build Info:
 
 rtHMM is programmed in C++11. Building has only been tested using g++ 4.8.2
 Ubuntu Linux 14.04, but any compiler supporting the necessary features should
 be able to build it.
+
+Do not forget to set `CMAKE_BUILD_TYPE` to `RELEASE` if you want fast inference.
 
 ### Dependencies
 
@@ -55,6 +57,10 @@ To build rtHMM (on Linux, anything else has not been tested yet):
 or
 
     $ ./test/runUnitTests
+
+### Install
+
+    $ sudo make install
 
 ## Documentation
 
