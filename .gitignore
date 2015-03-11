@@ -4,4 +4,4 @@ build
 .cxx_tags
 .yavide_proj
 cscope.*
-.docs
+docs/
