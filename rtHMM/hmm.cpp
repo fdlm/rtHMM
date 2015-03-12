@@ -84,6 +84,13 @@ namespace rtHMM {
 
     } // namespace rtHMM::internal
 
+    void hmm::set_prior(size_t state_id, double probability)
+    {
+        assert(state_id < num_states());
+
+        prior_probs[state_id] = probability;
+    }
+
     void hmm::set_transition(size_t from_state_id, size_t to_state_id, double transition_prob)
     {
         assert(from_state_id < num_states());
